@@ -1,4 +1,4 @@
-package client;
+package com.bachelor.microservice2.client;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;

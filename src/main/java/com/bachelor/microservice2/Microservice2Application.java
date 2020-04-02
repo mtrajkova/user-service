@@ -1,6 +1,6 @@
 package com.bachelor.microservice2;
 
-import client.ConsumerControllerClient;
+import com.bachelor.microservice2.client.ConsumerControllerClient;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
