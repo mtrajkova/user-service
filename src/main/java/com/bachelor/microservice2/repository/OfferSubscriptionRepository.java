@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface OfferSubscriptionRepository extends JpaRepository<OfferSubscription, Long> {
-    List<OfferSubscription> findAllByUserIdAndOfferValidIsTrue(Long userId);
+    List<OfferSubscription> findAllByUserIdAndIsOfferValidIsTrue(Long userId);
 }

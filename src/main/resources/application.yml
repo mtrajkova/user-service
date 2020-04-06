@@ -3,7 +3,7 @@ spring:
     name: employee-consumer
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     database: postgresql
   datasource:
     url: jdbc:postgresql://localhost:5432/api-jva-users
