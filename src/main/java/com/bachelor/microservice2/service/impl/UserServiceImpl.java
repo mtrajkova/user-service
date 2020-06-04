@@ -37,15 +37,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<GymDto> getAllGymsForUser(Long userId) {
+    public List<GymDto> getAllGymsForUser(Long userId, String jwt) {
         List<Long> gymIds = getSubscribedGymIdsForUser(userId);
-        return getGymDetails(gymIds);
+        return getGymDetails(gymIds, jwt);
     }
 
     @Override
-    public List<OfferDto> getAllOffersForUser(Long userId) {
+    public List<OfferDto> getAllOffersForUser(Long userId, String jwt) {
         List<Long> offerIds = getSubscribedOfferIdsForUser(userId);
-        return getOfferDetails(offerIds);
+        return getOfferDetails(offerIds, jwt);
     }
 
     private List<Long> getSubscribedGymIdsForUser(Long userId) {
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private List<GymDto> getGymDetails(List<Long> gymIds) {
-        return this.gymOffersServiceCaller.getGymsByIds(gymIds);
+    private List<GymDto> getGymDetails(List<Long> gymIds, String jwt) {
+        return this.gymOffersServiceCaller.getGymsByIds(gymIds, jwt);
     }
 
     private List<Long> getSubscribedOfferIdsForUser(Long userId) {
@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private List<OfferDto> getOfferDetails(List<Long> offerIds) {
-        return this.gymOffersServiceCaller.getOffersByIds(offerIds);
+    private List<OfferDto> getOfferDetails(List<Long> offerIds, String jwt) {
+        return this.gymOffersServiceCaller.getOffersByIds(offerIds, jwt);
     }
 }

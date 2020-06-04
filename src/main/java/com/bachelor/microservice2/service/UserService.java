@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserService {
     List<User> getAllUsers();
 
-    List<GymDto> getAllGymsForUser(Long userId);
+    List<GymDto> getAllGymsForUser(Long userId, String jwt);
 
-    List<OfferDto> getAllOffersForUser(Long userId);
+    List<OfferDto> getAllOffersForUser(Long userId, String jwt);
 }

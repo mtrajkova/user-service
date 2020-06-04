@@ -16,17 +16,17 @@ public class GymOffersServiceCaller {
         this.gymOffersServiceClient = gymOffersServiceClient;
     }
 
-    public List<GymDto> getGymsByIds(List<Long> gymIds) {
+    public List<GymDto> getGymsByIds(List<Long> gymIds, String jwt) {
         List<GymDto> gyms = new ArrayList<>();
 
-        gymIds.forEach(gymId -> gyms.add(new GymDto(gymOffersServiceClient.getGymById(gymId))));
+        gymIds.forEach(gymId -> gyms.add(new GymDto(gymOffersServiceClient.getGymById(gymId, jwt))));
         return gyms;
     }
 
-    public List<OfferDto> getOffersByIds(List<Long> offerIds) {
+    public List<OfferDto> getOffersByIds(List<Long> offerIds, String jwt) {
         List<OfferDto> offers = new ArrayList<>();
 
-        offerIds.forEach(offerId -> offers.add(new OfferDto(gymOffersServiceClient.getOfferById(offerId))));
+        offerIds.forEach(offerId -> offers.add(new OfferDto(gymOffersServiceClient.getOfferById(offerId, jwt))));
         return offers;
     }
 }
