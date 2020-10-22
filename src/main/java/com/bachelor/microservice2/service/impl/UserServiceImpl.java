@@ -37,20 +37,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<GymDto> getAllGymsForUser(Long userId, String jwt) {
-        List<Long> gymIds = getSubscribedGymIdsForUser(userId);
+    public List<GymDto> getAllGymsForUser(String username, String jwt) {
+        List<Long> gymIds = getSubscribedGymIdsForUser(username);
         return getGymDetails(gymIds, jwt);
     }
 
     @Override
-    public List<OfferDto> getAllOffersForUser(Long userId, String jwt) {
-        List<Long> offerIds = getSubscribedOfferIdsForUser(userId);
+    public List<OfferDto> getAllOffersForUser(String username, String jwt) {
+        List<Long> offerIds = getSubscribedOfferIdsForUser(username);
         return getOfferDetails(offerIds, jwt);
     }
 
-    private List<Long> getSubscribedGymIdsForUser(Long userId) {
-        userRepository.findById(userId).orElseThrow(UserDoesNotExist::new);
-        return gymSubscriptionRepository.findAllByUserId(userId).stream()
+    @Override
+    public void saveNewUser(User user) {
+        userRepository.save(user);
+    }
+
+    private List<Long> getSubscribedGymIdsForUser(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        return gymSubscriptionRepository.findAllByUserId(user.getId()).stream()
                 .map(GymSubscription::getGymId)
                 .collect(Collectors.toList());
     }
@@ -59,9 +64,9 @@ public class UserServiceImpl implements UserService {
         return this.gymOffersServiceCaller.getGymsByIds(gymIds, jwt);
     }
 
-    private List<Long> getSubscribedOfferIdsForUser(Long userId) {
-        userRepository.findById(userId).orElseThrow(UserDoesNotExist::new);
-        return offerSubscriptionRepository.findAllByUserIdAndIsOfferValidIsTrue(userId).stream()
+    private List<Long> getSubscribedOfferIdsForUser(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        return offerSubscriptionRepository.findAllByUserIdAndIsOfferValidIsTrue(user.getId()).stream()
                 .map(OfferSubscription::getOfferId)
                 .collect(Collectors.toList());
     }
