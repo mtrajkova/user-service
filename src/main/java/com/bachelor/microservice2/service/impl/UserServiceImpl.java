@@ -13,7 +13,8 @@ import com.bachelor.microservice2.repository.UserRepository;
 import com.bachelor.microservice2.service.UserService;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +47,24 @@ public class UserServiceImpl implements UserService {
     public List<OfferDto> getAllOffersForUser(String username, String jwt) {
         List<Long> offerIds = getSubscribedOfferIdsForUser(username);
         return getOfferDetails(offerIds, jwt);
+    }
+
+    @Override
+    public List<OfferDto> getCurrentOffers(String username, String jwt) {
+        List<OfferDto> offers = getAllOffersForUser(username, jwt);
+        if (!offers.isEmpty()) {
+            List<OfferDto> currentOffers;
+            LocalDateTime now = LocalDateTime.now();
+            currentOffers = offers.stream().filter(offer -> offer.isOfferValidOnDate(now)).collect(Collectors.toList());
+
+            if (currentOffers.isEmpty()) {
+                offers.sort(Comparator.comparing(OfferDto::getStartDate));
+                currentOffers.add(offers.get(0));
+                return Collections.singletonList(offers.get(0));
+            }
+            return currentOffers;
+        }
+        return offers;
     }
 
     @Override

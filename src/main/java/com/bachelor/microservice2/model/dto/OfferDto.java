@@ -1,7 +1,5 @@
 package com.bachelor.microservice2.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.time.LocalDateTime;
 
 public class OfferDto {
@@ -19,10 +17,14 @@ public class OfferDto {
     public OfferDto(OfferDto offerDto) {
         this.gymName = offerDto.gymName;
         this.startDate = offerDto.startDate;
-        this.endOfOffer = offerDto.endOfOffer;
+        this.endOfOffer = offerDto.endOfOffer.plusDays(offerDto.durationInDays);
         this.durationInDays = offerDto.durationInDays;
         this.price = offerDto.price;
         this.gymName = offerDto.getGym().getName();
+    }
+
+    public boolean isOfferValidOnDate(LocalDateTime dateTime) {
+        return dateTime.isBefore(this.endOfOffer);
     }
 
     public Long getId() {

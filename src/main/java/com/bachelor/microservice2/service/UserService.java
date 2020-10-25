@@ -13,5 +13,7 @@ public interface UserService {
 
     List<OfferDto> getAllOffersForUser(String username, String jwt);
 
+    List<OfferDto> getCurrentOffers(String username, String jwt);
+
     void saveNewUser(User user);
 }

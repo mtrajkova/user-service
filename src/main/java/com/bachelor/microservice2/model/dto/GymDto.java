@@ -7,6 +7,7 @@ public class GymDto {
     private Long id;
     private String name;
     private String locationAddress;
+    private String imageAddress;
 
     public GymDto() {}
 
@@ -26,5 +27,9 @@ public class GymDto {
 
     public String getLocationAddress() {
         return locationAddress;
+    }
+
+    public String getImageAddress() {
+        return imageAddress;
     }
 }

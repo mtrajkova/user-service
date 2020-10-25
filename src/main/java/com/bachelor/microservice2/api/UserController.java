@@ -27,8 +27,13 @@ public class UserController {
         return this.userService.getAllOffersForUser(username, jwt);
     }
 
+    @GetMapping("/{username}/current-offers")
+    public List<OfferDto> getCurrentOffers(@PathVariable("username") String username, @RequestHeader("Authorization") String jwt) {
+        return this.userService.getCurrentOffers(username, jwt);
+    }
+
     @PostMapping("/save-user")
-    public void saveUser(@RequestBody User user){
+    public void saveUser(@RequestBody User user) {
         this.userService.saveNewUser(user);
     }
 
