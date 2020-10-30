@@ -17,6 +17,16 @@ public class OfferSubscription {
     private LocalDateTime startOfOffer;
     private boolean isOfferValid;
 
+    public OfferSubscription() {
+    }
+
+    public OfferSubscription(Long userId, Long offerId) {
+        this.userId = userId;
+        this.offerId = offerId;
+        this.startOfOffer = LocalDateTime.now();
+        this.isOfferValid = true;
+    }
+
     public Long getId() {
         return id;
     }

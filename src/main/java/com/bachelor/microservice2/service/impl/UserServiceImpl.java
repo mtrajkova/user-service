@@ -2,6 +2,8 @@ package com.bachelor.microservice2.service.impl;
 
 import com.bachelor.microservice2.client.GymOffersServiceCaller;
 import com.bachelor.microservice2.exception.UserDoesNotExist;
+import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToGym;
+import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToOffer;
 import com.bachelor.microservice2.model.GymSubscription;
 import com.bachelor.microservice2.model.OfferSubscription;
 import com.bachelor.microservice2.model.User;
@@ -70,6 +72,35 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveNewUser(User user) {
         userRepository.save(user);
+    }
+
+    @Override
+    public void subscribeToOffer(String username, Long offerId) {
+        User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        if (offerSubscriptionRepository.findAllByUserIdAndOfferId(foundUser.getId(), offerId) != null) {
+            throw new UserIsAlreadySubscribedToOffer();
+        }
+
+        this.offerSubscriptionRepository.save(new OfferSubscription(foundUser.getId(), offerId));
+    }
+
+    @Override
+    public void subscribeToGym(String username, Long gymId) {
+        User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        if (gymSubscriptionRepository.findAllByUserIdAndGymId(foundUser.getId(), gymId) != null) {
+            throw new UserIsAlreadySubscribedToGym();
+        }
+
+        this.gymSubscriptionRepository.save(new GymSubscription(foundUser.getId(), gymId));
+    }
+
+    @Override
+    public void unsubscribeToGym(String username, Long gymId) {
+        User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        GymSubscription gymSubscription = gymSubscriptionRepository.findAllByUserIdAndGymId(foundUser.getId(), gymId);
+        if (gymSubscription != null) {
+            this.gymSubscriptionRepository.delete(gymSubscription);
+        }
     }
 
     private List<Long> getSubscribedGymIdsForUser(String username) {

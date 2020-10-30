@@ -14,6 +14,14 @@ public class GymSubscription {
     private Long gymId;
     private Long userId;
 
+    public GymSubscription() {
+    }
+
+    public GymSubscription(Long userId, Long gymId) {
+        this.userId = userId;
+        this.gymId = gymId;
+    }
+
     public Long getId() {
         return id;
     }

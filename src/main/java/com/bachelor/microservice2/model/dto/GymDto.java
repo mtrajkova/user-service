@@ -7,14 +7,18 @@ public class GymDto {
     private Long id;
     private String name;
     private String locationAddress;
-    private String imageAddress;
+    private String imageLocation;
+    private String phoneNumber;
 
-    public GymDto() {}
+    public GymDto() {
+    }
 
     public GymDto(GymDto gymDto) {
         this.id = gymDto.id;
         this.name = gymDto.name;
         this.locationAddress = gymDto.locationAddress;
+        this.imageLocation = gymDto.imageLocation;
+        this.phoneNumber = gymDto.phoneNumber;
     }
 
     public Long getId() {
@@ -29,7 +33,7 @@ public class GymDto {
         return locationAddress;
     }
 
-    public String getImageAddress() {
-        return imageAddress;
+    public String getImageLocation() {
+        return imageLocation;
     }
 }

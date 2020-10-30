@@ -15,11 +15,12 @@ public class OfferDto {
     }
 
     public OfferDto(OfferDto offerDto) {
-        this.gymName = offerDto.gymName;
-        this.startDate = offerDto.startDate;
-        this.endOfOffer = offerDto.endOfOffer.plusDays(offerDto.durationInDays);
-        this.durationInDays = offerDto.durationInDays;
-        this.price = offerDto.price;
+        this.startDate = offerDto.getStartDate();
+        this.endOfOffer = offerDto.getEndOfOffer().plusDays(offerDto.durationInDays);
+        this.durationInDays = offerDto.getDurationInDays();
+        this.price = offerDto.getPrice();
+        this.id = offerDto.getId();
+        this.gym = offerDto.getGym();
         this.gymName = offerDto.getGym().getName();
     }
 

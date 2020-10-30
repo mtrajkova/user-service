@@ -4,6 +4,7 @@ import com.bachelor.microservice2.model.User;
 import com.bachelor.microservice2.model.dto.GymDto;
 import com.bachelor.microservice2.model.dto.OfferDto;
 import com.bachelor.microservice2.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +31,24 @@ public class UserController {
     @GetMapping("/{username}/current-offers")
     public List<OfferDto> getCurrentOffers(@PathVariable("username") String username, @RequestHeader("Authorization") String jwt) {
         return this.userService.getCurrentOffers(username, jwt);
+    }
+
+    @PostMapping("/{username}/offers/{offerId}")
+    public ResponseEntity<Void> subscribeToOffer(@PathVariable("username") String username, @PathVariable("offerId") Long offerId, @RequestHeader("Authorization") String jwt) {
+        this.userService.subscribeToOffer(username, offerId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{username}/gyms/{gymId}")
+    public ResponseEntity<Void> subscribeToGym(@PathVariable("username") String username, @PathVariable("gymId") Long gymId, @RequestHeader("Authorization") String jwt) {
+        this.userService.subscribeToGym(username, gymId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{username}/gyms/{gymId}")
+    public ResponseEntity<Void> unsubscribeFromGym(@PathVariable("username") String username, @PathVariable("gymId") Long gymId, @RequestHeader("Authorization") String jwt) {
+        this.userService.unsubscribeToGym(username, gymId);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/save-user")

@@ -16,4 +16,10 @@ public interface UserService {
     List<OfferDto> getCurrentOffers(String username, String jwt);
 
     void saveNewUser(User user);
+
+    void subscribeToOffer(String username, Long offerId);
+
+    void subscribeToGym(String username, Long gymId);
+
+    void unsubscribeToGym(String username, Long gymId);
 }
