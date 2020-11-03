@@ -1,6 +1,8 @@
 package com.bachelor.microservice2.service.impl;
 
 import com.bachelor.microservice2.client.GymOffersServiceCaller;
+import com.bachelor.microservice2.client.payment.PaymentServiceCaller;
+import com.bachelor.microservice2.exception.PaymentFailed;
 import com.bachelor.microservice2.exception.UserDoesNotExist;
 import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToGym;
 import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToOffer;
@@ -26,12 +28,14 @@ public class UserServiceImpl implements UserService {
     private final GymSubscriptionRepository gymSubscriptionRepository;
     private final OfferSubscriptionRepository offerSubscriptionRepository;
     private final GymOffersServiceCaller gymOffersServiceCaller;
+    private final PaymentServiceCaller paymentServiceCaller;
 
-    public UserServiceImpl(UserRepository userRepository, GymSubscriptionRepository gymSubscriptionRepository, OfferSubscriptionRepository offerSubscriptionRepository, GymOffersServiceCaller gymOffersServiceCaller) {
+    public UserServiceImpl(UserRepository userRepository, GymSubscriptionRepository gymSubscriptionRepository, OfferSubscriptionRepository offerSubscriptionRepository, GymOffersServiceCaller gymOffersServiceCaller, PaymentServiceCaller paymentServiceCaller) {
         this.userRepository = userRepository;
         this.gymSubscriptionRepository = gymSubscriptionRepository;
         this.offerSubscriptionRepository = offerSubscriptionRepository;
         this.gymOffersServiceCaller = gymOffersServiceCaller;
+        this.paymentServiceCaller = paymentServiceCaller;
     }
 
     @Override
@@ -81,7 +85,6 @@ public class UserServiceImpl implements UserService {
             throw new UserIsAlreadySubscribedToOffer();
         }
 
-        this.offerSubscriptionRepository.save(new OfferSubscription(foundUser.getId(), offerId));
     }
 
     @Override
@@ -100,6 +103,19 @@ public class UserServiceImpl implements UserService {
         GymSubscription gymSubscription = gymSubscriptionRepository.findAllByUserIdAndGymId(foundUser.getId(), gymId);
         if (gymSubscription != null) {
             this.gymSubscriptionRepository.delete(gymSubscription);
+        }
+    }
+
+    @Override
+    public void payForOffer(String username, Long offerId, String email, String token, String amount, String jwt) {
+        this.subscribeToOffer(username, offerId);
+
+        User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        String chargeId = this.paymentServiceCaller.chargeForOffer(token, amount, jwt, email);
+        if (chargeId != null) {
+            this.offerSubscriptionRepository.save(new OfferSubscription(foundUser.getId(), offerId));
+        } else {
+            throw new PaymentFailed();
         }
     }
 

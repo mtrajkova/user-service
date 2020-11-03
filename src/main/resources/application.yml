@@ -3,7 +3,7 @@ spring:
     name: employee-consumer
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     database: postgresql
   datasource:
     url: jdbc:postgresql://localhost:5432/api-jva-users
@@ -16,3 +16,22 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8090/eureka
+feign:
+  client:
+    config:
+      default:
+        readTimeout: 160000000
+        connectionTimeout: 160000000
+hystrix:
+  command:
+    default:
+      execution:
+        timeout:
+          enabled: true
+        isolation:
+          thread:
+            timeoutInMilliseconds: 30000
+#ribbon timeout
+ribbon:
+  ReadTimeout: 30000
+  ConnectTimeout: 30000

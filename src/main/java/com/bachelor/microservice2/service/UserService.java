@@ -22,4 +22,6 @@ public interface UserService {
     void subscribeToGym(String username, Long gymId);
 
     void unsubscribeToGym(String username, Long gymId);
+
+    void payForOffer(String username, Long offerId, String email, String token, String amount, String jwt);
 }

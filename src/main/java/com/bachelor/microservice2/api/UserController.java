@@ -39,6 +39,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{username}/offers/{offerId}/pay")
+    public ResponseEntity<Void> payForOffer(@PathVariable("username") String username, @PathVariable("offerId") Long offerId,
+                                            @RequestBody String email, @RequestHeader("Authorization") String jwt,
+                                            @RequestHeader("token") String token, @RequestHeader("amount") String amount) {
+        this.userService.payForOffer(username, offerId, email, token, amount, jwt);
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/{username}/gyms/{gymId}")
     public ResponseEntity<Void> subscribeToGym(@PathVariable("username") String username, @PathVariable("gymId") Long gymId, @RequestHeader("Authorization") String jwt) {
         this.userService.subscribeToGym(username, gymId);
