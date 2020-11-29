@@ -79,12 +79,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void subscribeToOffer(String username, Long offerId) {
+    public void checkIfUserIsAlreadySubscribedToOffer(String username, Long offerId) {
         User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
-        if (offerSubscriptionRepository.findAllByUserIdAndOfferId(foundUser.getId(), offerId) != null) {
+        List<OfferSubscription> offerSubscriptions = offerSubscriptionRepository.findAllByUserIdAndOfferId(foundUser.getId(), offerId);
+        boolean hasValidCurrentOffer = offerSubscriptions.stream().anyMatch(OfferSubscription::isOfferValid);
+
+        if (!offerSubscriptions.isEmpty() && hasValidCurrentOffer) {
             throw new UserIsAlreadySubscribedToOffer();
         }
-
     }
 
     @Override
@@ -108,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void payForOffer(String username, Long offerId, String email, String token, String amount, String jwt) {
-        this.subscribeToOffer(username, offerId);
+        this.checkIfUserIsAlreadySubscribedToOffer(username, offerId);
 
         User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
         String chargeId = this.paymentServiceCaller.chargeForOffer(token, amount, jwt, email);

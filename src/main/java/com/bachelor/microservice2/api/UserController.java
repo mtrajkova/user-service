@@ -35,7 +35,7 @@ public class UserController {
 
     @PostMapping("/{username}/offers/{offerId}")
     public ResponseEntity<Void> subscribeToOffer(@PathVariable("username") String username, @PathVariable("offerId") Long offerId, @RequestHeader("Authorization") String jwt) {
-        this.userService.subscribeToOffer(username, offerId);
+        this.userService.checkIfUserIsAlreadySubscribedToOffer(username, offerId);
         return ResponseEntity.ok().build();
     }
 

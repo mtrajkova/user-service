@@ -17,7 +17,7 @@ public interface UserService {
 
     void saveNewUser(User user);
 
-    void subscribeToOffer(String username, Long offerId);
+    void checkIfUserIsAlreadySubscribedToOffer(String username, Long offerId);
 
     void subscribeToGym(String username, Long gymId);
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OfferSubscriptionRepository extends JpaRepository<OfferSubscription, Long> {
     List<OfferSubscription> findAllByUserIdAndIsOfferValidIsTrue(Long userId);
-    OfferSubscription findAllByUserIdAndOfferId(Long userId, Long offerId);
+    List<OfferSubscription> findAllByUserIdAndOfferId(Long userId, Long offerId);
 }
