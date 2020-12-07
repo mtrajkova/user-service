@@ -29,4 +29,8 @@ public class GymOffersServiceCaller {
         offerIds.forEach(offerId -> offers.add(new OfferDto(gymOffersServiceClient.getOfferById(offerId, jwt))));
         return offers;
     }
+
+    public OfferDto getOfferById(Long id, String jwt) {
+        return this.gymOffersServiceClient.getOfferById(id, jwt);
+    }
 }

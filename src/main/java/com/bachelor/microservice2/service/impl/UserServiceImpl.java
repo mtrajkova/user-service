@@ -2,10 +2,7 @@ package com.bachelor.microservice2.service.impl;
 
 import com.bachelor.microservice2.client.GymOffersServiceCaller;
 import com.bachelor.microservice2.client.payment.PaymentServiceCaller;
-import com.bachelor.microservice2.exception.PaymentFailed;
-import com.bachelor.microservice2.exception.UserDoesNotExist;
-import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToGym;
-import com.bachelor.microservice2.exception.UserIsAlreadySubscribedToOffer;
+import com.bachelor.microservice2.exception.*;
 import com.bachelor.microservice2.model.GymSubscription;
 import com.bachelor.microservice2.model.OfferSubscription;
 import com.bachelor.microservice2.model.User;
@@ -15,6 +12,7 @@ import com.bachelor.microservice2.repository.GymSubscriptionRepository;
 import com.bachelor.microservice2.repository.OfferSubscriptionRepository;
 import com.bachelor.microservice2.repository.UserRepository;
 import com.bachelor.microservice2.service.UserService;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -57,20 +55,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<OfferDto> getCurrentOffers(String username, String jwt) {
-        List<OfferDto> offers = getAllOffersForUser(username, jwt);
-        if (!offers.isEmpty()) {
-            List<OfferDto> currentOffers;
-            LocalDateTime now = LocalDateTime.now();
-            currentOffers = offers.stream().filter(offer -> offer.isOfferValidOnDate(now)).collect(Collectors.toList());
-
-            if (currentOffers.isEmpty()) {
-                offers.sort(Comparator.comparing(OfferDto::getStartDate));
-                currentOffers.add(offers.get(0));
-                return Collections.singletonList(offers.get(0));
-            }
-            return currentOffers;
-        }
-        return offers;
+        List<OfferDto> currentOffers = getAllOffersForUser(username, jwt);
+        currentOffers.forEach(offerDto ->
+                offerDto.setEndOfOffer(calculateEndOfOfferSubscription(username, offerDto.getId())));
+        return currentOffers;
     }
 
     @Override
@@ -115,7 +103,8 @@ public class UserServiceImpl implements UserService {
         User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
         String chargeId = this.paymentServiceCaller.chargeForOffer(token, amount, jwt, email);
         if (chargeId != null) {
-            this.offerSubscriptionRepository.save(new OfferSubscription(foundUser.getId(), offerId));
+            OfferDto offerDto = this.gymOffersServiceCaller.getOfferById(offerId, jwt);
+            this.offerSubscriptionRepository.save(new OfferSubscription(foundUser.getId(), offerId, offerDto.getDurationInDays()));
         } else {
             throw new PaymentFailed();
         }
@@ -141,5 +130,24 @@ public class UserServiceImpl implements UserService {
 
     private List<OfferDto> getOfferDetails(List<Long> offerIds, String jwt) {
         return this.gymOffersServiceCaller.getOffersByIds(offerIds, jwt);
+    }
+
+    private LocalDateTime calculateEndOfOfferSubscription(String username, Long offerId) {
+        User foundUser = userRepository.findByUsername(username).orElseThrow(UserDoesNotExist::new);
+        return offerSubscriptionRepository.findAllByUserIdAndOfferId(foundUser.getId(), offerId).stream()
+                .filter(OfferSubscription::isOfferSubscriptionValidOnCurrentDate)
+                .map(OfferSubscription::getValidUntil)
+                .findFirst().orElseThrow(UserNotSubscribedToOffer::new);
+    }
+
+    @Scheduled(cron = "59 23 * * ?")
+    public void deleteExpiredOffers() {
+        this.offerSubscriptionRepository.findAll()
+                .stream()
+                .filter(offerSubscription -> !offerSubscription.isOfferSubscriptionValidOnCurrentDate())
+                .forEach(offerSubscription -> {
+                    offerSubscription = offerSubscription.invalidateOfferSubscription();
+                    this.offerSubscriptionRepository.save(offerSubscription);
+                });
     }
 }

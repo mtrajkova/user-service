@@ -55,4 +55,8 @@ public class OfferDto {
     public GymDto getGym() {
         return gym;
     }
+
+    public void setEndOfOffer(LocalDateTime endOfOffer) {
+        this.endOfOffer = endOfOffer;
+    }
 }
