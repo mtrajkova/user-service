@@ -1,9 +1,11 @@
 package com.bachelor.microservice2.api;
 
+import com.bachelor.microservice2.model.HttpResponse;
 import com.bachelor.microservice2.model.User;
 import com.bachelor.microservice2.model.dto.GymDto;
 import com.bachelor.microservice2.model.dto.OfferDto;
 import com.bachelor.microservice2.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,11 +42,11 @@ public class UserController {
     }
 
     @PostMapping("/{username}/offers/{offerId}/pay")
-    public ResponseEntity<Void> payForOffer(@PathVariable("username") String username, @PathVariable("offerId") Long offerId,
-                                            @RequestBody String email, @RequestHeader("Authorization") String jwt,
-                                            @RequestHeader("token") String token, @RequestHeader("amount") String amount) {
+    public ResponseEntity<HttpResponse> payForOffer(@PathVariable("username") String username, @PathVariable("offerId") Long offerId,
+                                                    @RequestBody String email, @RequestHeader("Authorization") String jwt,
+                                                    @RequestHeader("token") String token, @RequestHeader("amount") String amount) {
         this.userService.payForOffer(username, offerId, email, token, amount, jwt);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new HttpResponse(null, "Offer payed successfully", HttpStatus.OK.value()));
     }
 
     @PostMapping("/{username}/gyms/{gymId}")
